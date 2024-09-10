@@ -1,5 +1,0 @@
-jwt:
-  base64-secret: zfoKGWEeXmzc/1FqWzChhgMH2WHtfWdK7idp5Hrlae06seBf8LWMw0Wg07s2f/C9b24sPML1VahqXopnxgq9ZA==
-  #config thời gian hết hạn access-token và refresh-token
-  access-token-validity-in-seconds: 8640 
-  refresh-token-validity-in-seconds: 864000 

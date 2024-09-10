@@ -1,7 +1,5 @@
 package com.duyngo.topjob.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -29,4 +27,7 @@ public interface UserService {
     public ResUpdateUserDTO convertResUpdateUserDTO(User user);
 
     public ResUserDTO convertResUserDTO(User user);
+
+    public User getUserByEmail(String email);
+
 }

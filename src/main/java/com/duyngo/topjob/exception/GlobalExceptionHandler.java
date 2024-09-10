@@ -95,4 +95,15 @@ public class GlobalExceptionHandler {
         res.setError("FORBIDDEN...");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
     }
+
+    @ExceptionHandler(value = {
+            TokenException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleTokenException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(ex.getMessage());
+        res.setError("TOKEN ERROR...");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

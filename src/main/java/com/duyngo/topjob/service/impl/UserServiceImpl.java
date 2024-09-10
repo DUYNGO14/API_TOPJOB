@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public User createUSer(User user) throws CheckInvalidException {
         boolean isExistsEmail = this.userRepository.existsByEmail(user.getEmail());
         if (isExistsEmail) {
-            throw new CheckInvalidException("Email is already in use");
+            throw new CheckInvalidException("Email " + user.getEmail() + " existed!");
         }
         // check role
         if (user.getRole() != null) {
@@ -125,8 +125,8 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .phonenumber(user.getPhonenumber())
                 .address(user.getAddress())
-                .createAt(user.getCreateAt())
-                .createBy(user.getCreateBy())
+                .createAt(user.getCreatedAt())
+                .createBy(user.getCreatedBy())
                 .role(role)
                 .build();
         return res;
@@ -148,8 +148,8 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .phonenumber(user.getPhonenumber())
                 .address(user.getAddress())
-                .updateAt(user.getCreateAt())
-                .updateBy(user.getCreateBy())
+                .updateAt(user.getCreatedAt())
+                .updateBy(user.getCreatedBy())
                 .role(role)
                 .build();
         return res;
@@ -172,13 +172,22 @@ public class UserServiceImpl implements UserService {
                 .phonenumber(user.getPhonenumber())
                 .address(user.getAddress())
                 .deleted(user.isDeleted())
-                .updateAt(user.getCreateAt())
-                .updateBy(user.getCreateBy())
-                .createAt(user.getCreateAt())
-                .createBy(user.getCreateBy())
+                .updateAt(user.getCreatedAt())
+                .updateBy(user.getCreatedBy())
+                .createAt(user.getCreatedAt())
+                .createBy(user.getCreatedBy())
                 .role(role)
                 .build();
         return res;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        Optional<User> user = this.userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        return null;
     }
 
 }

@@ -2,16 +2,20 @@ package com.duyngo.topjob.domain;
 
 import java.time.Instant;
 
+import com.duyngo.topjob.util.SecurityUtil;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,15 +43,36 @@ public class User {
     @NotBlank(message = "Password not blank")
     private String password;
     private String address;
-    @Pattern(regexp = "/(84|0[3|5|7|8|9])+([0-9]{8})\\b/g", message = "Enter a valid Mobile Number")
+    // @Pattern(regexp = "0[3|5|7|8|9])+([0-9]{8}", message = "Enter a valid Mobile
+    // Number")
     private String phonenumber;
-    private Instant createAt;
-    private Instant updateAt;
-    private String createBy;
-    private String updateBy;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
     private boolean deleted;
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @OneToOne(mappedBy = "user")
+    private Token token;
+
+    @PrePersist
+    public void handleBeforeCreate() {
+        // lấy name từ token
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        this.createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void handleBeforeUpdate() {
+        // lấy name từ token
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        this.updatedAt = Instant.now();
+    }
 }

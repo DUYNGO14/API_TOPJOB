@@ -12,6 +12,8 @@ import com.duyngo.topjob.domain.User;
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     boolean existsByEmail(String email);
 
+    Optional<User> findByEmail(String email);
+
     boolean existsByPhonenumber(String phonenumber);
 
     Optional<User> findById(long id);
