@@ -9,6 +9,7 @@ import com.duyngo.topjob.domain.response.ResultPaginationDTO;
 import com.duyngo.topjob.domain.response.role.ResRoleDTO;
 import com.duyngo.topjob.exception.RoleException;
 import com.duyngo.topjob.service.RoleService;
+import com.duyngo.topjob.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
@@ -34,6 +35,7 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
+    @ApiMessage("Get role by id")
     public ResponseEntity<ResRoleDTO> getRoleById(@PathVariable("id") long id) throws RoleException {
         Role role = this.roleService.getRoleById(id);
         if (role == null) {
@@ -43,23 +45,27 @@ public class RoleController {
     }
 
     @GetMapping("")
+    @ApiMessage("Get all role")
     public ResponseEntity<ResultPaginationDTO> getAllRole(@Filter Specification<Role> spec, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(this.roleService.getAllRole(spec, pageable));
     }
 
     @PostMapping("")
+    @ApiMessage("Create new role")
     public ResponseEntity<ResRoleDTO> create(@Valid @RequestBody Role reqRole) throws RoleException {
         Role role = this.roleService.createRole(reqRole);
         return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.convertResRoleDTO(role));
     }
 
     @PutMapping("")
+    @ApiMessage("Update role")
     public ResponseEntity<ResRoleDTO> update(@Valid @RequestBody ReqRoleUpdateDTO reqRole) throws RoleException {
         Role role = this.roleService.updateRole(reqRole);
         return ResponseEntity.status(HttpStatus.OK).body(this.roleService.convertResRoleDTO(role));
     }
 
     @DeleteMapping("/{id}")
+    @ApiMessage("Delete role by id")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) throws RoleException {
         this.roleService.deleteRole(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);

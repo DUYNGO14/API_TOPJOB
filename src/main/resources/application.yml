@@ -35,7 +35,8 @@ spring:
                         enable: true
 jwt:
   base64-secret: zfoKGWEeXmzc/1FqWzChhgMH2WHtfWdK7idp5Hrlae06seBf8LWMw0Wg07s2f/C9b24sPML1VahqXopnxgq9ZA==
-  #config thời gian hết hạn access-token và refresh-token
+  #config thời gian hết hạn reset-token, access-token và refresh-token
+  reset-token-validity-in-seconds: 3600
   access-token-validity-in-seconds: 86400
   refresh-token-validity-in-seconds: 864000 
 

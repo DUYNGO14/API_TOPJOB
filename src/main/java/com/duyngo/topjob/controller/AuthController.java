@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.duyngo.topjob.domain.Token;
 import com.duyngo.topjob.domain.User;
+import com.duyngo.topjob.domain.request.ResetPasswordDTO;
 import com.duyngo.topjob.domain.request.user_request.ReqLoginDTO;
+import com.duyngo.topjob.domain.response.ResForgotPassword;
 import com.duyngo.topjob.domain.response.ResLoginDTO;
 import com.duyngo.topjob.domain.response.user.ResCreateUserDTO;
 import com.duyngo.topjob.exception.CheckInvalidException;
@@ -56,6 +58,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @ApiMessage("Register")
     public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User requestUser)
             throws CheckInvalidException {
         User newUser = this.userService.createUSer(requestUser);
@@ -63,6 +66,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @ApiMessage("Login")
     public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO reqLogin) throws CheckInvalidException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 reqLogin.getEmail(), reqLogin.getPassword());
@@ -72,23 +76,14 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResLoginDTO res = new ResLoginDTO();
         User currentUserDB = this.userService.getUserByEmail(reqLogin.getEmail());
-        if (currentUserDB != null) {
-            ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
-            userLogin.setId(currentUserDB.getId());
-            userLogin.setEmail(currentUserDB.getEmail());
-            userLogin.setName(currentUserDB.getUsername());
-            userLogin.setRole(currentUserDB.getRole());
-            res.setUser(userLogin);
-        }
+        res = this.tokenService.convertResLoginDTO(currentUserDB);
         // create access token
         String accessToken = this.securityUtil.createAccessToken(reqLogin.getEmail(), res);
         res.setAccessToken(accessToken);
         // create refresh token
         String refreshToken = this.securityUtil.createRefreshToken(reqLogin.getEmail(), res);
         // update table token
-        Token token = new Token();
-        token.setRefreshToken(refreshToken);
-        token.setUser(currentUserDB);
+        Token token = Token.builder().user(currentUserDB).refreshToken(refreshToken).build();
         Token currentToken = this.tokenService.getTokenByUser(currentUserDB);
         if (currentToken == null) {
             this.tokenService.createToken(token);
@@ -111,6 +106,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @ApiMessage("Logout")
     public ResponseEntity<Void> postLogout() throws TokenException {
         String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
@@ -130,6 +126,7 @@ public class AuthController {
     }
 
     @GetMapping("/account")
+    @ApiMessage("Get account")
     public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
         String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
@@ -148,6 +145,7 @@ public class AuthController {
     }
 
     @GetMapping("/refresh")
+    @ApiMessage("Refresh")
     public ResponseEntity<ResLoginDTO> refreshToken(
             @CookieValue(name = "refresh_token", defaultValue = "cookie") String refresh_token) throws TokenException {
         if (refresh_token.equals("cookie")) {
@@ -164,23 +162,14 @@ public class AuthController {
         }
         ResLoginDTO res = new ResLoginDTO();
         User currentUserDB = this.userService.getUserByEmail(email);
-        if (currentUserDB != null) {
-            ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
-            userLogin.setId(currentUserDB.getId());
-            userLogin.setEmail(currentUserDB.getEmail());
-            userLogin.setName(currentUserDB.getUsername());
-            userLogin.setRole(currentUserDB.getRole());
-            res.setUser(userLogin);
-        }
+        res = this.tokenService.convertResLoginDTO(currentUserDB);
         // create access token
         String accessToken = this.securityUtil.createAccessToken(email, res);
         res.setAccessToken(accessToken);
         // create refresh token
         String newRefreshToken = this.securityUtil.createRefreshToken(email, res);
         // update table token
-        Token token = new Token();
-        token.setRefreshToken(newRefreshToken);
-        token.setUser(currentUserDB);
+        Token token = Token.builder().user(currentUserDB).refreshToken(newRefreshToken).build();
         this.tokenService.updateToken(token);
 
         // set cookie
@@ -195,6 +184,28 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, resCookies.toString())
                 .body(res);
+    }
+
+    @PostMapping("/forgot-password")
+    @ApiMessage("Forgot password")
+    public ResponseEntity<ResForgotPassword> forgotPassword(@RequestBody String email) throws TokenException {
+        ResForgotPassword res = this.tokenService.forgotPassword(email);
+        return ResponseEntity.ok().body(res);
+    }
+
+    @PostMapping("/reset-password")
+    @ApiMessage("Reset password")
+    public ResponseEntity<String> resetPassword(@RequestBody String secretKey) throws TokenException {
+        String check = this.tokenService.resetPassword(secretKey);
+        return ResponseEntity.ok().body(check);
+    }
+
+    @PostMapping("/change-password")
+    @ApiMessage("Chang password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ResetPasswordDTO request)
+            throws TokenException, CheckInvalidException {
+        User user = this.tokenService.changePassword(request);
+        return ResponseEntity.ok().body("Change password success!");
     }
 
 }

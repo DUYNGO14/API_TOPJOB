@@ -31,6 +31,8 @@ public class Token {
     private long id;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String resetToken;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;

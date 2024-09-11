@@ -50,6 +50,8 @@ public class SecurityUtil {
     private long accessTokenExpiration;
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
+    @Value("${jwt.reset-token-validity-in-seconds}")
+    private long resetTokenExpiration;
 
     public String createAccessToken(String email, ResLoginDTO resLoginDTO) {
         ResLoginDTO.UserInsideToken userToken = new ResLoginDTO.UserInsideToken();
@@ -58,6 +60,37 @@ public class SecurityUtil {
         userToken.setName(resLoginDTO.getUser().getName());
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
+
+        // set role
+        User user = this.userService.getUserByEmail(email);
+        Role role = user.getRole();
+        List<Permission> permissions = role.getPermissions();
+        // hardcode permission (for testing)
+        List<String> listAuthority = new ArrayList<String>();
+        if (permissions.size() != 0) {
+            for (Permission per : permissions) {
+                listAuthority.add(per.getName());
+            }
+        }
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuedAt(now)
+                .expiresAt(validity)
+                .subject(email)
+                .claim("user", userToken)
+                .claim("role", role.getName())
+                .claim("permission", listAuthority)
+                .build();
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+    }
+
+    public String createResetToken(String email, ResLoginDTO resLoginDTO) {
+        ResLoginDTO.UserInsideToken userToken = new ResLoginDTO.UserInsideToken();
+        userToken.setId(resLoginDTO.getUser().getId());
+        userToken.setEmail(resLoginDTO.getUser().getEmail());
+        userToken.setName(resLoginDTO.getUser().getName());
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.resetTokenExpiration, ChronoUnit.SECONDS);
 
         // set role
         User user = this.userService.getUserByEmail(email);
