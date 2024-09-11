@@ -14,11 +14,18 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 
+import com.duyngo.topjob.domain.Permission;
+import com.duyngo.topjob.domain.Role;
+import com.duyngo.topjob.domain.User;
 import com.duyngo.topjob.domain.response.ResLoginDTO;
+import com.duyngo.topjob.service.RoleService;
+import com.duyngo.topjob.service.UserService;
 import com.nimbusds.jose.util.Base64;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -27,9 +34,13 @@ import javax.crypto.spec.SecretKeySpec;
 @Service
 public class SecurityUtil {
     private final JwtEncoder jwtEncoder;
+    private final RoleService roleService;
+    private final UserService userService;
 
-    public SecurityUtil(JwtEncoder jwtEncoder) {
+    public SecurityUtil(JwtEncoder jwtEncoder, RoleService roleService, UserService userService) {
         this.jwtEncoder = jwtEncoder;
+        this.roleService = roleService;
+        this.userService = userService;
     }
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
@@ -47,16 +58,25 @@ public class SecurityUtil {
         userToken.setName(resLoginDTO.getUser().getName());
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
+
+        // set role
+        User user = this.userService.getUserByEmail(email);
+        Role role = user.getRole();
+        List<Permission> permissions = role.getPermissions();
         // hardcode permission (for testing)
-        // List<String> listAuthority = new ArrayList<String>();
-        // listAuthority.add("ROLE_USER_CREATE");
-        // listAuthority.add("ROLE_USER_UPDATE");
+        List<String> listAuthority = new ArrayList<String>();
+        if (permissions.size() != 0) {
+            for (Permission per : permissions) {
+                listAuthority.add(per.getName());
+            }
+        }
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email)
                 .claim("user", userToken)
-                // .claim("permission", listAuthority)
+                .claim("role", role.getName())
+                .claim("permission", listAuthority)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
@@ -69,16 +89,24 @@ public class SecurityUtil {
         userToken.setName(resLoginDTO.getUser().getName());
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+        // set role
+        User user = this.userService.getUserByEmail(email);
+        Role role = user.getRole();
+        List<Permission> permissions = role.getPermissions();
         // hardcode permission (for testing)
-        // List<String> listAuthority = new ArrayList<String>();
-        // listAuthority.add("ROLE_USER_CREATE");
-        // listAuthority.add("ROLE_USER_UPDATE");
+        List<String> listAuthority = new ArrayList<String>();
+        if (permissions.size() != 0) {
+            for (Permission per : permissions) {
+                listAuthority.add(per.getName());
+            }
+        }
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email)
                 .claim("user", userToken)
-                // .claim("permission", listAuthority)
+                .claim("role", role.getName())
+                .claim("permission", listAuthority)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
