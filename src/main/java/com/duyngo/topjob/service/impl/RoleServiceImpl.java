@@ -1,5 +1,6 @@
 package com.duyngo.topjob.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,20 +10,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.duyngo.topjob.domain.Permission;
 import com.duyngo.topjob.domain.Role;
 import com.duyngo.topjob.domain.request.role_request.ReqRoleUpdateDTO;
 import com.duyngo.topjob.domain.response.ResultPaginationDTO;
 import com.duyngo.topjob.domain.response.role.ResRoleDTO;
 import com.duyngo.topjob.exception.RoleException;
+import com.duyngo.topjob.repository.PermissionRepository;
 import com.duyngo.topjob.repository.RoleRepository;
 import com.duyngo.topjob.service.RoleService;
 
 @Service
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
 
-    public RoleServiceImpl(RoleRepository roleRepository) {
+    public RoleServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository) {
         this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
     }
 
     @Override
@@ -48,6 +53,14 @@ public class RoleServiceImpl implements RoleService {
         boolean isExistsName = this.roleRepository.existsByName(role.getName());
         if (isExistsName) {
             throw new RoleException("Role with name :" + role.getName() + " is already in role");
+        }
+        if (role.getPermissions() != null) {
+            List<Long> reqPermission = role.getPermissions()
+                    .stream().map(x -> x.getId())
+                    .collect(Collectors.toList());
+
+            List<Permission> dbPermission = this.permissionRepository.findByIdIn(reqPermission);
+            role.setPermissions(dbPermission);
         }
         return this.roleRepository.save(role);
     }
@@ -105,6 +118,20 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public ResRoleDTO convertResRoleDTO(Role role) {
         ResRoleDTO res = new ResRoleDTO();
+        List<ResRoleDTO.PermissionRole> listPermissions = new ArrayList<ResRoleDTO.PermissionRole>();
+        List<Permission> permissions = role.getPermissions();
+        if (permissions.size() != 0) {
+            for (Permission permission : permissions) {
+                ResRoleDTO.PermissionRole pm = ResRoleDTO.PermissionRole.builder()
+                        .apiPath(permission.getApiPath())
+                        .name(permission.getName())
+                        .method(permission.getMethod())
+                        .module(permission.getModule())
+                        .build();
+                listPermissions.add(pm);
+            }
+
+        }
         res = ResRoleDTO.builder()
                 .id(role.getId())
                 .name(role.getName())
@@ -114,6 +141,7 @@ public class RoleServiceImpl implements RoleService {
                 .updatedAt(role.getUpdatedAt())
                 .createdBy(role.getCreatedBy())
                 .updatedBy(role.getUpdatedBy())
+                .permission(listPermissions)
                 .build();
         return res;
 
