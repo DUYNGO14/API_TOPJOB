@@ -6,60 +6,54 @@ import java.util.List;
 import com.duyngo.topjob.util.SecurityUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "companies")
-public class Company {
+@Entity
+@Table(name = "skills")
+public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotBlank(message = "Name not blank!")
+
+    @NotBlank(message = "Name skill không được để trống!")
     private String name;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description;
-    private String address;
-    private String logo;
-    private boolean deleted;
+
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<User> users;
-
-    @OneToMany(mappedBy = "company")
+    private boolean deleted;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
     @JsonIgnore
     private List<Job> jobs;
 
+    // @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
+    // @JsonIgnore
+    // private List<Subscriber> subscribers;
+
     @PrePersist
     public void handleBeforeCreate() {
-        // lấy name từ token
         this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
+
         this.createdAt = Instant.now();
     }
 
@@ -68,6 +62,7 @@ public class Company {
         this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
+
         this.updatedAt = Instant.now();
     }
 }

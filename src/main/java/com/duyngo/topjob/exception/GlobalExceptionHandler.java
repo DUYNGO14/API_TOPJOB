@@ -117,4 +117,15 @@ public class GlobalExceptionHandler {
         res.setError("COMPANY ERROR...");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            SkillException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleSkillException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(ex.getMessage());
+        res.setError("SKILL ERROR...");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }
