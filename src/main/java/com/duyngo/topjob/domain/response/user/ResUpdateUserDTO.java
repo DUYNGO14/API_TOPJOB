@@ -2,6 +2,8 @@ package com.duyngo.topjob.domain.response.user;
 
 import java.time.Instant;
 
+import com.duyngo.topjob.domain.response.user.ResUserDTO.CompanyUser;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +25,7 @@ public class ResUpdateUserDTO {
     private Instant updateAt;
     private String updateBy;
     private RoleUser role;
+    private CompanyUser company;
 
     @Getter
     @Setter
@@ -30,6 +33,16 @@ public class ResUpdateUserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class RoleUser {
+        private long id;
+        private String name;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CompanyUser {
         private long id;
         private String name;
     }

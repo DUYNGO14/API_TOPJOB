@@ -23,6 +23,7 @@ public class ResCreateUserDTO {
     private Instant createAt;
     private String createBy;
     private RoleUser role;
+    private CompanyUser company;
 
     @Getter
     @Setter
@@ -30,6 +31,16 @@ public class ResCreateUserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class RoleUser {
+        private long id;
+        private String name;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CompanyUser {
         private long id;
         private String name;
     }

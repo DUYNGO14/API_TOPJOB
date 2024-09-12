@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.duyngo.topjob.domain.Company;
 import com.duyngo.topjob.domain.Role;
 import com.duyngo.topjob.domain.User;
 import com.duyngo.topjob.domain.request.user_request.ReqUserUpdateDTO;
@@ -19,6 +20,7 @@ import com.duyngo.topjob.domain.response.user.ResUpdateUserDTO;
 import com.duyngo.topjob.domain.response.user.ResUserDTO;
 import com.duyngo.topjob.exception.CheckInvalidException;
 import com.duyngo.topjob.repository.UserRepository;
+import com.duyngo.topjob.service.CompanyService;
 import com.duyngo.topjob.service.RoleService;
 import com.duyngo.topjob.service.UserService;
 
@@ -27,11 +29,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final CompanyService companyService;
 
-    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder,
+            CompanyService companyService) {
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.companyService = companyService;
     }
 
     @Override
@@ -44,6 +49,11 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() != null) {
             Role r = this.roleService.getRoleById(user.getRole().getId());
             user.setRole(r);
+        }
+        // check company
+        if (user.getCompany() != null) {
+            Company c = this.companyService.getCompanyById(user.getCompany().getId());
+            user.setCompany(c);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user);
@@ -95,6 +105,11 @@ public class UserServiceImpl implements UserService {
             Role r = this.roleService.getRoleById(reqUser.getRole().getId());
             currentUser.setRole(r);
         }
+        // check company
+        if (reqUser.getCompany() != null) {
+            Company c = this.companyService.getCompanyById(reqUser.getCompany().getId());
+            currentUser.setCompany(c);
+        }
         return this.userRepository.save(currentUser);
     }
 
@@ -111,14 +126,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResCreateUserDTO convertResCreateUserDTO(User user) {
+        ResCreateUserDTO res = new ResCreateUserDTO();
         ResCreateUserDTO.RoleUser role = new ResCreateUserDTO.RoleUser();
+        ResCreateUserDTO.CompanyUser company = new ResCreateUserDTO.CompanyUser();
         if (user.getRole() != null) {
             role = ResCreateUserDTO.RoleUser.builder()
                     .id(user.getRole().getId())
                     .name(user.getRole().getName())
                     .build();
         }
-        ResCreateUserDTO res = ResCreateUserDTO.builder()
+        if (user.getCompany() != null) {
+            company = ResCreateUserDTO.CompanyUser.builder()
+                    .id(user.getCompany().getId())
+                    .name(user.getCompany().getName())
+                    .build();
+        }
+        res = ResCreateUserDTO.builder()
                 .id(user.getId())
                 .fullname(user.getFullname())
                 .username(user.getUsername())
@@ -128,20 +151,29 @@ public class UserServiceImpl implements UserService {
                 .createAt(user.getCreatedAt())
                 .createBy(user.getCreatedBy())
                 .role(role)
+                .company(company)
                 .build();
         return res;
     }
 
     @Override
     public ResUpdateUserDTO convertResUpdateUserDTO(User user) {
+        ResUpdateUserDTO res = new ResUpdateUserDTO();
         ResUpdateUserDTO.RoleUser role = new ResUpdateUserDTO.RoleUser();
+        ResUpdateUserDTO.CompanyUser company = new ResUpdateUserDTO.CompanyUser();
         if (user.getRole() != null) {
             role = ResUpdateUserDTO.RoleUser.builder()
                     .id(user.getRole().getId())
                     .name(user.getRole().getName())
                     .build();
         }
-        ResUpdateUserDTO res = ResUpdateUserDTO.builder()
+        if (user.getCompany() != null) {
+            company = ResUpdateUserDTO.CompanyUser.builder()
+                    .id(user.getCompany().getId())
+                    .name(user.getCompany().getName())
+                    .build();
+        }
+        res = ResUpdateUserDTO.builder()
                 .id(user.getId())
                 .fullname(user.getFullname())
                 .username(user.getUsername())
@@ -151,20 +183,29 @@ public class UserServiceImpl implements UserService {
                 .updateAt(user.getCreatedAt())
                 .updateBy(user.getCreatedBy())
                 .role(role)
+                .company(company)
                 .build();
         return res;
     }
 
     @Override
     public ResUserDTO convertResUserDTO(User user) {
+        ResUserDTO res = new ResUserDTO();
         ResUserDTO.RoleUser role = new ResUserDTO.RoleUser();
+        ResUserDTO.CompanyUser company = new ResUserDTO.CompanyUser();
         if (user.getRole() != null) {
             role = ResUserDTO.RoleUser.builder()
                     .id(user.getRole().getId())
                     .name(user.getRole().getName())
                     .build();
         }
-        ResUserDTO res = ResUserDTO.builder()
+        if (user.getCompany() != null) {
+            company = ResUserDTO.CompanyUser.builder()
+                    .id(user.getCompany().getId())
+                    .name(user.getCompany().getName())
+                    .build();
+        }
+        res = ResUserDTO.builder()
                 .id(user.getId())
                 .fullname(user.getFullname())
                 .username(user.getUsername())
@@ -177,6 +218,7 @@ public class UserServiceImpl implements UserService {
                 .createAt(user.getCreatedAt())
                 .createBy(user.getCreatedBy())
                 .role(role)
+                .company(company)
                 .build();
         return res;
     }

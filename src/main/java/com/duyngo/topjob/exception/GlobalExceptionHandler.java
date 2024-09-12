@@ -106,4 +106,15 @@ public class GlobalExceptionHandler {
         res.setError("TOKEN ERROR...");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            CompanyException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleCompanyException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(ex.getMessage());
+        res.setError("COMPANY ERROR...");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

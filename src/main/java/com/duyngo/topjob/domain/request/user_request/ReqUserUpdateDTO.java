@@ -1,5 +1,6 @@
 package com.duyngo.topjob.domain.request.user_request;
 
+import com.duyngo.topjob.domain.Company;
 import com.duyngo.topjob.domain.Role;
 
 import jakarta.validation.constraints.NotNull;
@@ -21,4 +22,5 @@ public class ReqUserUpdateDTO {
     private String phonenumber;
     private String address;
     private Role role;
+    private Company company;
 }
