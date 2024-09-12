@@ -1,15 +1,19 @@
 package com.duyngo.topjob.domain;
 
 import java.time.Instant;
+import java.util.List;
 
 import com.duyngo.topjob.util.SecurityUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -51,6 +55,7 @@ public class User {
     private String createdBy;
     private String updatedBy;
     private boolean deleted;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
@@ -61,6 +66,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<Resume> resumes;
 
     @PrePersist
     public void handleBeforeCreate() {

@@ -139,4 +139,15 @@ public class GlobalExceptionHandler {
         res.setError("JOB ERROR...");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            ResumeException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleResumeException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(ex.getMessage());
+        res.setError("RESUME ERROR...");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

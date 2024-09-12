@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.duyngo.topjob.domain.Role;
-import com.duyngo.topjob.domain.request.role_request.ReqRoleUpdateDTO;
 import com.duyngo.topjob.domain.response.ResultPaginationDTO;
 import com.duyngo.topjob.domain.response.role.ResRoleDTO;
 import com.duyngo.topjob.exception.RoleException;
