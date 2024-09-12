@@ -39,5 +39,7 @@ jwt:
   reset-token-validity-in-seconds: 3600
   access-token-validity-in-seconds: 86400
   refresh-token-validity-in-seconds: 864000 
-
+#base path
+upload-file:
+    base-uri: file:///D:/SpringBoot_RestApi/upload/
 

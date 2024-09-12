@@ -4,13 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.duyngo.topjob.domain.Job;
-import com.duyngo.topjob.domain.Skill;
 import com.duyngo.topjob.domain.response.ResultPaginationDTO;
 import com.duyngo.topjob.domain.response.job.ResJobCreateDTO;
 import com.duyngo.topjob.domain.response.job.ResJobDTO;
 import com.duyngo.topjob.domain.response.job.ResJobUpdateDTO;
 import com.duyngo.topjob.exception.JobException;
-import com.duyngo.topjob.exception.SkillException;
 import com.duyngo.topjob.service.JobService;
 import com.duyngo.topjob.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
