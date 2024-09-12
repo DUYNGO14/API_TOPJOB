@@ -39,7 +39,6 @@ public class Skill {
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-    private boolean deleted;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
     @JsonIgnore
     private List<Job> jobs;

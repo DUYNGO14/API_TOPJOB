@@ -55,13 +55,13 @@ public class SkillController {
     }
 
     @PutMapping()
-    @ApiMessage("Create new skill!")
+    @ApiMessage("Update new skill!")
     public ResponseEntity<Skill> update(@RequestBody Skill request) throws SkillException {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.skillService.update(request));
     }
 
     @DeleteMapping("/{id}")
-    @ApiMessage("Create new skill!")
+    @ApiMessage("delete skill!")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) throws SkillException {
         this.skillService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);

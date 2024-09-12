@@ -64,12 +64,16 @@ public class SecurityUtil {
         // set role
         User user = this.userService.getUserByEmail(email);
         Role role = user.getRole();
-        List<Permission> permissions = role.getPermissions();
-        // hardcode permission (for testing)
+        String nameRole = "";
         List<String> listAuthority = new ArrayList<String>();
-        if (permissions.size() != 0) {
-            for (Permission per : permissions) {
-                listAuthority.add(per.getName());
+        if (role != null) {
+            nameRole = role.getName();
+            List<Permission> permissions = role.getPermissions();
+            // hardcode permission (for testing)
+            if (permissions.size() != 0) {
+                for (Permission per : permissions) {
+                    listAuthority.add(per.getName());
+                }
             }
         }
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -77,7 +81,7 @@ public class SecurityUtil {
                 .expiresAt(validity)
                 .subject(email)
                 .claim("user", userToken)
-                .claim("role", role.getName())
+                .claim("role", nameRole)
                 .claim("permission", listAuthority)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -95,12 +99,16 @@ public class SecurityUtil {
         // set role
         User user = this.userService.getUserByEmail(email);
         Role role = user.getRole();
-        List<Permission> permissions = role.getPermissions();
-        // hardcode permission (for testing)
+        String nameRole = "";
         List<String> listAuthority = new ArrayList<String>();
-        if (permissions.size() != 0) {
-            for (Permission per : permissions) {
-                listAuthority.add(per.getName());
+        if (role != null) {
+            nameRole = role.getName();
+            List<Permission> permissions = role.getPermissions();
+            // hardcode permission (for testing)
+            if (permissions.size() != 0) {
+                for (Permission per : permissions) {
+                    listAuthority.add(per.getName());
+                }
             }
         }
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -108,7 +116,7 @@ public class SecurityUtil {
                 .expiresAt(validity)
                 .subject(email)
                 .claim("user", userToken)
-                .claim("role", role.getName())
+                .claim("role", nameRole)
                 .claim("permission", listAuthority)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -125,12 +133,16 @@ public class SecurityUtil {
         // set role
         User user = this.userService.getUserByEmail(email);
         Role role = user.getRole();
-        List<Permission> permissions = role.getPermissions();
-        // hardcode permission (for testing)
+        String nameRole = "";
         List<String> listAuthority = new ArrayList<String>();
-        if (permissions.size() != 0) {
-            for (Permission per : permissions) {
-                listAuthority.add(per.getName());
+        if (role != null) {
+            nameRole = role.getName();
+            List<Permission> permissions = role.getPermissions();
+            // hardcode permission (for testing)
+            if (permissions.size() != 0) {
+                for (Permission per : permissions) {
+                    listAuthority.add(per.getName());
+                }
             }
         }
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -138,7 +150,7 @@ public class SecurityUtil {
                 .expiresAt(validity)
                 .subject(email)
                 .claim("user", userToken)
-                .claim("role", role.getName())
+                .claim("role", nameRole)
                 .claim("permission", listAuthority)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

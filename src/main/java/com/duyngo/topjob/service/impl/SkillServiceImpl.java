@@ -71,10 +71,12 @@ public class SkillServiceImpl implements SkillService {
     public void delete(long id) throws SkillException {
         Skill currentSkill = this.getSkillById(id);
         if (currentSkill == null) {
-            throw new SkillException("Skill with id = " + id + "exists!");
+            throw new SkillException("Skill with id = " + id + " exists!");
         }
-        currentSkill.setDeleted(true);
-        this.skillRepository.save(currentSkill);
+        currentSkill.getJobs().forEach(e -> e.getSkills().remove(currentSkill));
+        this.skillRepository.delete(currentSkill);
+        // currentSkill.setDeleted(true);
+        // this.skillRepository.save(currentSkill);
     }
 
 }

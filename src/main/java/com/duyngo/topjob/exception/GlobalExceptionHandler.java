@@ -128,4 +128,15 @@ public class GlobalExceptionHandler {
         res.setError("SKILL ERROR...");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            JobException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleJobException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(ex.getMessage());
+        res.setError("JOB ERROR...");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

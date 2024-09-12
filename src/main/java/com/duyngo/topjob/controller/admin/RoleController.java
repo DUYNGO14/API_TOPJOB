@@ -44,22 +44,22 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.OK).body(this.roleService.convertResRoleDTO(role));
     }
 
-    @GetMapping("")
+    @GetMapping()
     @ApiMessage("Get all role")
     public ResponseEntity<ResultPaginationDTO> getAllRole(@Filter Specification<Role> spec, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(this.roleService.getAllRole(spec, pageable));
     }
 
-    @PostMapping("")
+    @PostMapping()
     @ApiMessage("Create new role")
     public ResponseEntity<ResRoleDTO> create(@Valid @RequestBody Role reqRole) throws RoleException {
         Role role = this.roleService.createRole(reqRole);
         return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.convertResRoleDTO(role));
     }
 
-    @PutMapping("")
+    @PutMapping()
     @ApiMessage("Update role")
-    public ResponseEntity<ResRoleDTO> update(@Valid @RequestBody ReqRoleUpdateDTO reqRole) throws RoleException {
+    public ResponseEntity<ResRoleDTO> update(@Valid @RequestBody Role reqRole) throws RoleException {
         Role role = this.roleService.updateRole(reqRole);
         return ResponseEntity.status(HttpStatus.OK).body(this.roleService.convertResRoleDTO(role));
     }

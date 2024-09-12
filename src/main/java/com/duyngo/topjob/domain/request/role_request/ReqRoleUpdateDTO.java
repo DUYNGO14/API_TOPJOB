@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
+import com.duyngo.topjob.domain.Permission;
+
 @Getter
 @Setter
 @Builder
@@ -21,4 +25,5 @@ public class ReqRoleUpdateDTO {
     private String name;
     private String description;
     private boolean active;
+    private List<Permission> permissions;
 }

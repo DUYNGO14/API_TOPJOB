@@ -66,14 +66,24 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role updateRole(ReqRoleUpdateDTO role) throws RoleException {
+    public Role updateRole(Role role) throws RoleException {
         Role currentRole = this.getRoleById(role.getId());
         if (currentRole == null) {
             throw new RoleException("Role with id = " + role.getId() + " not exist!");
         }
-        boolean isExistsName = this.getRoleByName(role.getName()) == null ? false : true;
-        if (isExistsName) {
-            throw new RoleException("Role with name :" + role.getName() + " is already in role");
+        if (!currentRole.getName().equals(role.getName())) {
+            boolean isExistsName = this.getRoleByName(role.getName()) == null ? false : true;
+            if (isExistsName) {
+                throw new RoleException("Role with name :" + role.getName() + " is already in role");
+            }
+        }
+        if (role.getPermissions() != null) {
+            List<Long> reqPermission = role.getPermissions()
+                    .stream().map(x -> x.getId())
+                    .collect(Collectors.toList());
+
+            List<Permission> dbPermission = this.permissionRepository.findByIdIn(reqPermission);
+            currentRole.setPermissions(dbPermission);
         }
         currentRole.setName(role.getName());
         currentRole.setDescription(role.getDescription());
