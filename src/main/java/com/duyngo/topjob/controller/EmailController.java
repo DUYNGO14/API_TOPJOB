@@ -24,7 +24,8 @@ public class EmailController {
 
     @GetMapping("/email")
     @ApiMessage("Send simple email")
-    // @Scheduled(cron = "*/40 * * * * *")
+    // mỗi tuần một lần
+    @Scheduled(cron = "0 0 0 * * 0")
     @Transactional
     public String sendEmail() {
         System.out.println("Gửi mail!");
