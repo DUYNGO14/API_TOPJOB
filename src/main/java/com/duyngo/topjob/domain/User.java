@@ -71,6 +71,9 @@ public class User {
     @JsonIgnore
     List<Resume> resumes;
 
+    @OneToOne(mappedBy = "user")
+    private Subscriber subscriber;
+
     @PrePersist
     public void handleBeforeCreate() {
         // lấy name từ token

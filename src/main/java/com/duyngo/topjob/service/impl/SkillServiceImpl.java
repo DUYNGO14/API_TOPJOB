@@ -74,6 +74,8 @@ public class SkillServiceImpl implements SkillService {
             throw new SkillException("Skill with id = " + id + " exists!");
         }
         currentSkill.getJobs().forEach(e -> e.getSkills().remove(currentSkill));
+
+        currentSkill.getSubscribers().forEach(s -> s.getSkills().remove(currentSkill));
         this.skillRepository.delete(currentSkill);
         // currentSkill.setDeleted(true);
         // this.skillRepository.save(currentSkill);

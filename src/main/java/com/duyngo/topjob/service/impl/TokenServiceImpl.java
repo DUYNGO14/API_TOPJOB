@@ -16,7 +16,6 @@ import com.duyngo.topjob.exception.TokenException;
 import com.duyngo.topjob.repository.TokenRepository;
 import com.duyngo.topjob.repository.UserRepository;
 import com.duyngo.topjob.service.TokenService;
-import com.duyngo.topjob.service.UserService;
 import com.duyngo.topjob.util.SecurityUtil;
 
 @Service
